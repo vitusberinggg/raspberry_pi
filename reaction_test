@@ -7,5 +7,28 @@ import random
 
 # --- Definitions ---
 
-LED_pins = []
-button_pins = []
+player_pins = {
+    1: {'LED': 17, 'BUTTON': 27},
+    2: {'LED': 22, 'BUTTON': 23},
+    3: {'LED': 24, 'BUTTON': 25},
+    4: {'LED': 5, 'BUTTON': 6}
+}
+
+players = list(player_pins.keys()) # Creates a list called "players" which holds the keys of the dictionary "player_pins" (e.g the players)
+active_players = list(players) # Creates a list called "active_players" and set it's inital value to "players" (to make sure that no one is disqualified from start)
+number_of_players = len(players) # Sets the number of players to the length of the list "players"
+
+center_LED_pin = 
+
+# --- GPIO setup ---
+
+GPIO.setmode(GPIO.BCM) # Sets the pin numbering scheme to BCM (Broadcom) mode
+GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
+
+for player in player_pins.values(): # Loops through the values in "player_pins"
+    GPIO.setup(player['LED'], GPIO.OUT) # Configures each players LED-pin as an output (so the program can turn it on and off)
+    GPIO.setup(player['BUTTON'], GPIO.IN, pull_up_down = GPIO.PUD_DOWN) # Configures each players button as an input with a software pull-down resistor (ensures that the pin is at a stable low (0V) until the button is pressed, at which point the voltage goes high (3.3V) and the program can detect the press)
+
+GPIO.setup(center_LED_pin, GPIO.OUT) # Configures the center LED-pin as an output
+
+# --- Display setup ---
