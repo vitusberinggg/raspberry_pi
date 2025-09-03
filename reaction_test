@@ -1,0 +1,11 @@
+
+# --- Imports ---
+
+import Rpi.GPIO as GPIO
+import time
+import random
+
+# --- Definitions ---
+
+LED_pins = []
+button_pins = []
