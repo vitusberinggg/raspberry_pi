@@ -1,12 +1,9 @@
 
 # --- Imports ---
 
-import time
 import Rpi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
-from luma.core.interface.serial import i2c # 
-from luma.oled.device import ssd1306 # 
-from luma.core.render import canvas #
-from PIL import ImageFont # Imports ImageFont from PIL
+import time
+from RPLCD.i2c import CharLCD
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
 
 # --- Setup ---
@@ -43,7 +40,7 @@ def test_speaker():
 def test_display():
 
     """
-    Tests the OLED display by showing a test message.
+    Tests the LCD display by showing a test message.
 
     Arguments:
         None
@@ -56,17 +53,16 @@ def test_display():
     print("Testing display...") # Print a message indicating that the display is being tested
 
     try: # Try to:
-        serial = i2c(port = 1, address = 0x3C) # Create an I2C serial interface
-        device = ssd1306(serial) # Create an SSD1306 OLED display device
-        display_font = ImageFont.load_default() # Load the default font for the display
+        lcd = CharLCD(i2c_expander = 'PCF8574', address = 0x27, port = 1,
+                    cols = 16, rows = 1, dotsize = 8) # Initialize the LCD display with the specified parameters
+        
+        lcd.clear() # Clear the display
 
-        with canvas(device) as draw: # Create a drawing canvas on the device
-            draw.text((0, 0), "Testing display...", font = display_font, fill = "white") # Draw the test message on the canvas
-
-        print("Display test succeeded!") # Print a success message
+        lcd.write_string("DISPLAY TEST") # Write a test message to the display
 
     except Exception as e: # If that doesn't work
-        print(f"Display test failed: {e}") # Print an error message
+        print(f"Display not found or could not be initialized: {e}") # Print an error message
+        lcd = None # Set lcd to None
 
 def test_leds():
 
