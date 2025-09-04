@@ -4,10 +4,7 @@
 import Rpi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
 import time
 import random
-from luma.core.interface.serial import i2c # 
-from luma.oled.device import ssd1306 # 
-from luma.core.render import canvas #
-from PIL import ImageFont # Imports ImageFont from PIL
+from RPLCD.i2c import CharLCD
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
 
 # --- Definitions ---
@@ -42,13 +39,14 @@ GPIO.setup(center_LED_pin, GPIO.OUT) # Configures the center LED-pin as an outpu
 # --- Display setup ---
 
 try: # Try to:
-    serial = i2c(port = 1, address = 0x3c) # Establish a connection to the OLED display using the I2C communication protocol at address 0x3c on port 1
-    device = ssd1306(serial) # Create an object called "device" that represents the OLED display
-    display_font = ImageFont.truetype("DejaVuSansMono-Bold.ttf", 14) # Load a TrueType font for displaying text on the OLED display
+    lcd = CharLCD(i2c_expander = 'PCF8574', address = 0x27, port = 1,
+                  cols = 16, rows = 1, dotsize = 8) # Initialize the LCD display with the specified parameters
+    
+    lcd.clear() # Clear the display
 
 except Exception as e: # If that doesn't work
-    print(f"OLED display not found or could not be initialized: {e}") # Print an error message
-    device = None # Set device to None
+    print(f"Display not found or could not be initialized: {e}") # Print an error message
+    lcd = None # Set lcd to None
 
 # --- Speaker setup ---
 
@@ -67,7 +65,7 @@ except Exception as e: # If that doesn't work
 def update_display(text_lines):
 
     """
-    Updates the OLED display with a list of strings.
+    Updates the LCD display with a list of strings.
 
     Arguments:
         "text_lines":
@@ -77,14 +75,17 @@ def update_display(text_lines):
     
     """
     
-    if device:
+    if lcd: # If the lcd variable is not None (i.e. the display was successfully initialized)
 
-        with canvas(device) as draw:
-            y = 0
+        lcd.clear()
 
-            for line in text_lines:
-                draw.text((0, y), line, font = display_font, fill = "white")
-                y += 16
+        if len(text_lines) > 0: # If there is at least one line of text to display
+            lcd.cursor_pos = (0, 0) # Set cursor to the top row, start of line
+            lcd.write_string(text_lines[0].center(16)) # Write the first line of text, centered
+
+        if len(text_lines) > 1: # If there is a second line of text to display
+            lcd.cursor_pos = (1, 0) # Set cursor to the second row, start of line
+            lcd.write_string(text_lines[1].center(16)) # Write the second line of text, centered
 
 def play_sound(sound):
 
