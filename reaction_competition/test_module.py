@@ -5,11 +5,22 @@ import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of t
 import time
 from RPLCD.i2c import CharLCD
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
+from reaction_competition import center_LED_pin
 
 # --- Setup ---
 
 GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
+
+# --- Definitions ---
+
+led_pins = [11, 13,
+            15, 18,
+            29, 32,
+            33, 37,
+            22] # Define a list of GPIO pins connected to the LEDs
+
+button_pins = [12, 16, 31, 36] # Define a list of GPIO pins connected to the buttons
 
 # --- Functions ---
 
@@ -82,11 +93,6 @@ def test_leds():
     print("Testing LEDs...") # Print a message indicating that the LEDs are being tested
 
     try: # Try to:
-        led_pins = [11, 13,
-                    15, 18,
-                    29, 32,
-                    33, 37,
-                    22] # Define a list of GPIO pins connected to the LEDs
 
         for pin in led_pins: # For each pin in the list
             GPIO.setup(pin, GPIO.OUT) # Set the pin as an output
@@ -97,6 +103,7 @@ def test_leds():
         print("LED test succeeded!") # Print a success message
 
     except Exception as e: # If that doesn't work
+
         print(f"LED test failed: {e}") # Print an error message
 
 def test_buttons():
@@ -115,12 +122,9 @@ def test_buttons():
     print("Testing buttons...") # Print a message indicating that the buttons are being tested
 
     try: # Try to:
-        button_pins = [12, 16, 31, 36] # Define a list of GPIO pins connected to the buttons
 
         for pin in button_pins: # For each pin in the list
             GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_UP) # Set the pin as an input with a pull-up resistor
-
-        for pin in button_pins: # For each pin in the list
             print(f"Press button connected to pin {pin}...") # Prompt the user to press the button
             GPIO.wait_for_edge(pin, GPIO.FALLING) # Wait for the button to be pressed
             print(f"Button on pin {pin} pressed") # Print a message indicating that the button was pressed
