@@ -1,14 +1,14 @@
 
 # --- Imports ---
 
-import Rpi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
+import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
 import time
 from RPLCD.i2c import CharLCD
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
 
 # --- Setup ---
 
-GPIO.setmode(GPIO.BCM) # Sets the pin numbering scheme to BCM (Broadcom) mode
+GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
 # --- Functions ---
@@ -28,9 +28,11 @@ def test_speaker():
 
     print("Testing speaker...") # Print a message indicating that the speaker is being tested
 
+    test_sound = None
+
     try: # Try to:
         mixer.init() # Initialize the audio mixer
-        test_sound = mixer.Sound("") # Load the sound file for the test sound
+        test_sound = mixer.Sound("assets\sounds\test_sound.wav") # Load the sound file for the test sound
         test_sound.play() # Play the test sound
         print("Speaker test suceeded!") # Print a success message
 

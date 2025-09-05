@@ -1,7 +1,7 @@
 
 # --- Imports ---
 
-import Rpi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
+import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
 import time
 import random
 from RPLCD.i2c import CharLCD
@@ -26,7 +26,7 @@ center_LED_pin =
 
 # --- GPIO setup ---
 
-GPIO.setmode(GPIO.BCM) # Sets the pin numbering scheme to BCM (Broadcom) mode
+GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
 for player in player_pins.values(): # Loops through the values in "player_pins"
