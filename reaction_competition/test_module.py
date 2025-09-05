@@ -5,16 +5,16 @@ import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of t
 import time
 from RPLCD.i2c import CharLCD
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
-from reaction_competition import center_LED_pin
 
 # --- Setup ---
 
+GPIO.cleanup()
 GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
 # --- Definitions ---
 
-led_pins = [11, 13,
+led_pins = [7, 13,
             15, 18,
             29, 32,
             33, 37,
@@ -43,7 +43,7 @@ def test_speaker():
 
     try: # Try to:
         mixer.init() # Initialize the audio mixer
-        test_sound = mixer.Sound("assets\sounds\test_sound.wav") # Load the sound file for the test sound
+        test_sound = mixer.Sound("assets/sounds/test_sound2.wav") # Load the sound file for the test sound
         test_sound.play() # Play the test sound
         print("Speaker test suceeded!") # Print a success message
 
@@ -121,18 +121,30 @@ def test_buttons():
 
     print("Testing buttons...") # Print a message indicating that the buttons are being tested
 
-    try: # Try to:
+    try:
+        for pin in button_pins:
 
-        for pin in button_pins: # For each pin in the list
-            GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_UP) # Set the pin as an input with a pull-up resistor
-            print(f"Press button connected to pin {pin}...") # Prompt the user to press the button
-            GPIO.wait_for_edge(pin, GPIO.FALLING) # Wait for the button to be pressed
-            print(f"Button on pin {pin} pressed") # Print a message indicating that the button was pressed
+            GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+            
+            print(f"Press the button connected to physical pin {pin}...")
+            
+            # We wait for a RISING edge (LOW to HIGH signal) for up to 10 seconds.
+            edge = GPIO.wait_for_edge(pin, GPIO.RISING, timeout=10000)
+            
+            if edge is None:
+                print(f"TIMEOUT: No button press detected on physical pin {pin}.")
+                print("Please double-check your wiring for this button and try again.")
+                return # Stop the test if one button fails
+            
+            else:
+                print(f"SUCCESS: Button on physical pin {pin} was pressed!")
+            
+            time.sleep(0.5)
 
-        print("Button test succeeded!") # Print a success message
+        print("\n--- Button test completed successfully! ---")
 
-    except Exception as e: # If that doesn't work
-        print(f"Button test failed: {e}") # Print an error message
+    except Exception as e:
+        print(f"An error occurred during the test: {e}")
 
 if __name__ == "__main__":
     test_speaker()
