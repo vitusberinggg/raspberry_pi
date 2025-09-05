@@ -82,12 +82,14 @@ def test_leds():
     print("Testing LEDs...") # Print a message indicating that the LEDs are being tested
 
     try: # Try to:
-        led_pins = [] # Define a list of GPIO pins connected to the LEDs
+        led_pins = [11, 13,
+                    15, 18,
+                    29, 32,
+                    33, 37,
+                    22] # Define a list of GPIO pins connected to the LEDs
 
         for pin in led_pins: # For each pin in the list
             GPIO.setup(pin, GPIO.OUT) # Set the pin as an output
-
-        for pin in led_pins: # For each pin in the list
             GPIO.output(pin, GPIO.HIGH) # Turn on the LED
             time.sleep(0.5) # Wait for 0.5 seconds
             GPIO.output(pin, GPIO.LOW) # Turn off the LED
@@ -113,7 +115,7 @@ def test_buttons():
     print("Testing buttons...") # Print a message indicating that the buttons are being tested
 
     try: # Try to:
-        button_pins = [] # Define a list of GPIO pins connected to the buttons
+        button_pins = [12, 16, 31, 36] # Define a list of GPIO pins connected to the buttons
 
         for pin in button_pins: # For each pin in the list
             GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_UP) # Set the pin as an input with a pull-up resistor

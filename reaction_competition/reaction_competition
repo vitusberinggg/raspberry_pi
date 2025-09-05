@@ -9,20 +9,20 @@ from pygame import mixer # Imports the mixer module from the pygame library for 
 
 # --- Definitions ---
 
-delay_interval = [2, 10]
+delay_interval = [3, 10]
 
 player_pins = {
-    1: {'GREEN_LED': 17, 'RED_LED': 22, 'BUTTON': 27},
-    2: {'GREEN_LED': 24, 'RED_LED': 5, 'BUTTON': 23},
-    3: {'GREEN_LED': 6, 'RED_LED': 12, 'BUTTON': 25},
-    4: {'GREEN_LED': 13, 'RED_LED': 16, 'BUTTON': 19}
+    "Red": {"GREEN_LED": 11, "RED_LED": 13, "BUTTON": 12},
+    "Yellow": {"GREEN_LED": 15 , "RED_LED": 18, "BUTTON": 16},
+    "Green": {"GREEN_LED": 29, "RED_LED": 32, "BUTTON": 31},
+    "Blue": {"GREEN_LED": 33, "RED_LED": 37, "BUTTON": 36}
 }
 
 players = list(player_pins.keys()) # Creates a list called "players" which holds the keys of the dictionary "player_pins" (e.g the players)
 active_players = list(players) # Creates a list called "active_players" and set it's inital value to "players" (to make sure that no one is disqualified from start)
 number_of_players = len(players) # Sets the number of players to the length of the list "players"
 
-center_LED_pin = 
+center_LED_pin = 22
 
 # --- GPIO setup ---
 
@@ -30,16 +30,16 @@ GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
 for player in player_pins.values(): # Loops through the values in "player_pins"
-    GPIO.setup(player['GREEN_LED'], GPIO.OUT) # Configures each player's green LED-pin as an output
-    GPIO.setup(player['RED_LED'], GPIO.OUT) # Configures each player's red LED-pin as an output
-    GPIO.setup(player['BUTTON'], GPIO.IN, pull_up_down = GPIO.PUD_DOWN) # Configures each players button as an input with a software pull-down resistor (ensures that the pin is at a stable low (0V) until the button is pressed, at which point the voltage goes high (3.3V) and the program can detect the press)
+    GPIO.setup(player["GREEN_LED"], GPIO.OUT) # Configures each player's green LED-pin as an output
+    GPIO.setup(player["RED_LED"], GPIO.OUT) # Configures each player's red LED-pin as an output
+    GPIO.setup(player["BUTTON"], GPIO.IN, pull_up_down = GPIO.PUD_DOWN) # Configures each players button as an input with a software pull-down resistor (ensures that the pin is at a stable low (0V) until the button is pressed, at which point the voltage goes high (3.3V) and the program can detect the press)
 
 GPIO.setup(center_LED_pin, GPIO.OUT) # Configures the center LED-pin as an output
 
 # --- Display setup ---
 
 try: # Try to:
-    lcd = CharLCD(i2c_expander = 'PCF8574', address = 0x27, port = 1,
+    lcd = CharLCD(i2c_expander = "PCF8574", address = 0x27, port = 1,
                   cols = 16, rows = 1, dotsize = 8) # Initialize the LCD display with the specified parameters
     
     lcd.clear() # Clear the display
@@ -117,8 +117,8 @@ def all_lights_off():
     """
     
     for player in player_pins.values(): # Go through each value in the dictionary "player_pins"
-        GPIO.output(player['GREEN_LED'], GPIO.LOW) # Sets the green LED's value to "LOW" (which turns it off)
-        GPIO.output(player['RED_LED'], GPIO.LOW) # Sets the red LED's value to "LOW" (which turns it off)
+        GPIO.output(player["GREEN_LED"], GPIO.LOW) # Sets the green LED's value to "LOW" (which turns it off)
+        GPIO.output(player["RED_LED"], GPIO.LOW) # Sets the red LED's value to "LOW" (which turns it off)
 
     GPIO.output(center_LED_pin, GPIO.LOW) # Sets the center LED's value to "LOW" (which turns it off)
 
@@ -141,7 +141,7 @@ def round_loop(active_players):
     
     while True: # Creates an infinite loop
 
-        if all(GPIO.input(player_pins[player]['BUTTON']) == GPIO.HIGH for player in active_players): # If all active players are pressing their buttons:
+        if all(GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH for player in active_players): # If all active players are pressing their buttons:
             break # Break the loop
 
         time.sleep(0.1) # Sleep for 0.1 second (to prevent high CPU usage)
@@ -162,10 +162,10 @@ def round_loop(active_players):
 
         for player in active_players: # For each active player
 
-            if GPIO.input(player_pins[player]['BUTTON']) == GPIO.HIGH and player not in reaction_times: # If the player is pressing their button and is not already disqualified
+            if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH and player not in reaction_times: # If the player is pressing their button and is not already disqualified
 
                 update_display([f"Player {player}", "EARLY PRESS!", "Disqualified"]) # Update the display to show that the player pressed early
-                GPIO.output(player_pins[player]['RED_LED'], GPIO.HIGH) # Turn on the red LED for the player
+                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the player
                 active_players.remove(player) # Remove the player from the list of active players
         
         time.sleep(0.1) # Sleep for 0.1 second
@@ -181,8 +181,8 @@ def round_loop(active_players):
     while len(reaction_times) < len(active_players): # While not all active players have reacted
         for player in active_players: # For each active player
             if player not in reaction_times: # If the player has not yet reacted
-                if GPIO.input(player_pins[player]['BUTTON']) == GPIO.HIGH: # If the player is pressing their button
-                    GPIO.output(player_pins[player]['GREEN_LED'], GPIO.HIGH) # Turn on the green LED for the player
+                if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH: # If the player is pressing their button
+                    GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH) # Turn on the green LED for the player
                     reaction_time = (time.time() - start_time) * 1000 # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
     
@@ -221,7 +221,7 @@ def main_tournament():
 
         for player in sorted_players: # For each player in the sorted list
 
-            time_str = "DISQUALIFIED" if reaction_times[player] == float('inf') else f"{reaction_times[player]:.2f} ms" # Format the reaction time or mark as disqualified
+            time_str = "DISQUALIFIED" if reaction_times[player] == float("inf") else f"{reaction_times[player]:.2f} ms" # Format the reaction time or mark as disqualified
             update_display([f"Player {player}", f"Time: {time_str}"]) # Update the display to show the player's reaction time
             time.sleep(2)
 
@@ -229,7 +229,7 @@ def main_tournament():
         active_players.remove(slowest_player) # Remove the slowest player from the list of active players
         
         update_display([f"Player {slowest_player}", "ELIMINATED"]) # Update the display to show that the slowest player is eliminated
-        GPIO.output(player_pins[slowest_player]['RED_LED'], GPIO.HIGH) # Turn on the red LED for the slowest player
+        GPIO.output(player_pins[slowest_player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the slowest player
 
         round_number += 1
 
@@ -237,7 +237,7 @@ def main_tournament():
         winner = active_players[0] # Set "winner" to the last remaining player
         update_display([f"WINNER:", "PLAYER {winner}"])
         play_sound(win_sound)
-        GPIO.output(player_pins[winner]['GREEN_LED'], GPIO.HIGH)
+        GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
 
     else:
         update_display(["NO WINNER"])
