@@ -12,7 +12,7 @@ from pygame import mixer # Imports the mixer module from the pygame library for 
 delay_interval = [3, 10]
 
 player_pins = {
-    "Red": {"GREEN_LED": 11, "RED_LED": 13, "BUTTON": 12},
+    "Red": {"GREEN_LED": 11, "RED_LED": 13, "BUTTON": 40},
     "Yellow": {"GREEN_LED": 15 , "RED_LED": 18, "BUTTON": 16},
     "Green": {"GREEN_LED": 29, "RED_LED": 32, "BUTTON": 31},
     "Blue": {"GREEN_LED": 33, "RED_LED": 37, "BUTTON": 36}
@@ -243,3 +243,21 @@ def main_tournament():
         update_display(["NO WINNER"])
     
     time.sleep(5)
+
+# --- Main execution ---
+
+if __name__ == "__main__":
+    try:
+        while True:
+            main_tournament()
+            update_display("Game Over", "Restarting...")
+            time.sleep(5)
+
+    except KeyboardInterrupt:
+        print("\nGame interrupted. Exiting.")
+
+    finally:
+        all_lights_off()
+        update_display("Goodbye!", "")
+        GPIO.cleanup()
+        print("GPIO cleaned up.")
