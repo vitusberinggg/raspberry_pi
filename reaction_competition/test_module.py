@@ -127,13 +127,8 @@ def test_buttons():
             
             print(f"Press the button connected to physical pin {pin}...")
             
-            # Wait for a RISING edge (LOW to HIGH signal) for up to 20 seconds.
-            # edge = GPIO.wait_for_edge(pin, GPIO.RISING, timeout = 20000)
-            while(True):
-                pin_value = GPIO.input(pin)
-                print(pin, pin_value)
-                time.sleep(0.1)
-            
+            edge = GPIO.wait_for_edge(pin, GPIO.RISING, timeout = 20000)
+
             if edge is None:
                 print(f"TIMEOUT: No button press detected on physical pin {pin}.")
                 return # Stop the test if one button fails
