@@ -10,4 +10,4 @@ GPIO.setup(button, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 while True:
     if GPIO.input(button) == GPIO.HIGH:
         print("Button connected to pin {button} was pressed.")
-        time.sleep(1)
+        time.sleep(0.1)
