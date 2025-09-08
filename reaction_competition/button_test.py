@@ -1,7 +1,13 @@
-from gpiozero import Button
+import RPi.GPIO as GPIO
+import time
 
-button = Button(18)
+GPIO.setmode(GPIO.BOARD)
 
-button.wait_for_press()
+button = 12
 
-print("Button was pressed.")
+GPIO.setup(button, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+
+while True:
+    if GPIO.input(button) == GPIO.HIGH:
+        print("Button connected to pin {button} was pressed.")
+        time.sleep(1)
