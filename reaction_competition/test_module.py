@@ -9,7 +9,6 @@ from pygame import mixer # Imports the mixer module from the pygame library for 
 # --- Setup ---
 
 GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
-GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
 # --- Definitions ---
 
@@ -120,20 +119,17 @@ def test_buttons():
 
     print("Testing buttons...") # Print a message indicating that the buttons are being tested
 
-    try:
-        for pin in button_pins:
 
-            GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
-            
-            print(f"Press the button connected to physical pin {pin}...")
-            
-            while True:
-                if GPIO.input(pin) == GPIO.HIGH:
-                    print("Button on physical pin {pin} was pressed.")
-                    break
+    for pin in button_pins:
 
-    except Exception as e:
-        print(f"An error occurred during the test: {e}")
+        GPIO.setup(pin, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+            
+        print(f"Press the button connected to physical pin {pin}...")
+
+        GPIO.wait_for_edge(pin, GPIO.RISING) # Wait for the button to be pressed
+
+        print(f"Button on pin {pin} pressed") # Print a message indicating that the button was pressed
+
 
 if __name__ == "__main__":
     test_speaker()
