@@ -4,7 +4,7 @@
 import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
 import time
 from RPLCD.i2c import CharLCD
-from pygame import mixer # Imports the mixer module from the pygame library for audio playback
+import pygame
 
 # --- Setup ---
 
@@ -40,9 +40,9 @@ def test_speaker():
     test_sound = None
 
     try: # Try to:
-        mixer.init() # Initialize the audio mixer
-        mixer.set_volume(1.0)
-        test_sound = mixer.Sound("assets/sounds/test_sound2.wav") # Load the sound file for the test sound
+        pygame.mixer.init() # Initialize the audio mixer
+        pygame.mixer.set_volume(1.0)
+        test_sound = pygame.mixer.Sound("assets/sounds/test_sound2.wav") # Load the sound file for the test sound
         test_sound.play() # Play the test sound
         print("Speaker test suceeded!") # Print a success message
 
