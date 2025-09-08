@@ -18,7 +18,7 @@ led_pins = [7, 13,
             33, 37,
             22] # Define a list of GPIO pins connected to the LEDs
 
-button_pins = [12, 16, 31, 36] # Define a list of GPIO pins connected to the buttons
+button_pins = [40, 16, 31, 36] # Define a list of GPIO pins connected to the buttons
 
 # --- Functions ---
 
