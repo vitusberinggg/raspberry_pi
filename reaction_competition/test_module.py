@@ -8,7 +8,6 @@ from pygame import mixer # Imports the mixer module from the pygame library for 
 
 # --- Setup ---
 
-GPIO.cleanup()
 GPIO.setmode(GPIO.BOARD) # Sets the pin numbering scheme to BOARD mode
 GPIO.setwarnings(False) # Disables the warnings that the "RPi.GPIO" library might generate
 
@@ -128,12 +127,11 @@ def test_buttons():
             
             print(f"Press the button connected to physical pin {pin}...")
             
-            # We wait for a RISING edge (LOW to HIGH signal) for up to 10 seconds.
-            edge = GPIO.wait_for_edge(pin, GPIO.RISING, timeout=10000)
+            # Wait for a RISING edge (LOW to HIGH signal) for up to 20 seconds.
+            edge = GPIO.wait_for_edge(pin, GPIO.RISING, timeout = 20000)
             
             if edge is None:
                 print(f"TIMEOUT: No button press detected on physical pin {pin}.")
-                print("Please double-check your wiring for this button and try again.")
                 return # Stop the test if one button fails
             
             else:
