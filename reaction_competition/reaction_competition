@@ -52,8 +52,8 @@ except Exception as e: # If that doesn't work
 
 try: # Try to:
     mixer.init() # Initialize the audio mixer
-    start_sound = mixer.Sound("start_sound.wav") # Load the sound file for the start sound
-    win_sound = mixer.Sound("win_sound.wav") # Load the sound file for the win sound
+    start_sound = mixer.Sound("assets/sounds/start_sound.wav") # Load the sound file for the start sound
+    win_sound = mixer.Sound("assets/sounds/win_sound.wav") # Load the sound file for the win sound
 
 except Exception as e: # If that doesn't work
     print(f"Could not initialize audio mixer or load sound files: {e}") # Print an error message
