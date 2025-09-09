@@ -42,9 +42,23 @@ def test_speaker():
     try: # Try to:
         pygame.mixer.init() # Initialize the audio mixer
         test_sound = pygame.mixer.Sound("assets/sounds/test_sound.wav") # Load the sound file for the test sound
+        start_sound = pygame.mixer.Sound("assets/sounds/start_sound.wav") # Load the sound file for the start sound
+        win_sound = pygame.mixer.Sound("assets/sounds/win_sound.wav") # Load the sound file for the win sound
+
         test_sound.set_volume(1.0)
+        start_sound.set_volume(1.0)
+        win_sound.set_volume(1.0)
+
         test_sound.play() # Play the test sound
-        print("Speaker test suceeded!") # Print a success message
+        time.sleep(test_sound.get_length()) # Wait for test sound to end
+
+        start_sound.play() # Play start sound
+        time.sleep(start_sound.get_length()) # Wait for start sound to end
+
+        win_sound.play() # Play win sound
+        time.sleep(win_sound.get_length()) # Wait for win sound to end
+
+        print("Speaker test succeeded!") # Print a success message
 
     except Exception as e: # If that doesn't work
         print(f"Speaker test failed: {e}") # Print an error message
