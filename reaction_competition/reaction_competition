@@ -219,6 +219,8 @@ def round_loop(active_players):
                     reaction_time = round((time.time() - start_time) * 1000) # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
     
+    all_lights_off()
+
     return reaction_times
 
 def main_tournament():
