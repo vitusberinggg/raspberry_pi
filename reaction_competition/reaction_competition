@@ -4,7 +4,7 @@
 import RPi.GPIO as GPIO # Imports the RPi.GPIO library which allows control of the GPIO pins on a Raspberry Pi
 import time
 import random
-from RPLCD.i2c import CharLCD
+from RPLCD.i2c import CharLCD # Imports module for controlling LCD display
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
 
 # --- Definitions ---
@@ -65,7 +65,7 @@ except Exception as e: # If that doesn't work
 def update_display(line_1 = "", line_2 = ""):
 
     """
-    Updates the LCD display with a list of strings.
+    Updates the LCD display.
 
     Arguments:
         "line_1":
@@ -76,20 +76,28 @@ def update_display(line_1 = "", line_2 = ""):
     
     """
 
-    if isinstance(line_1, (list, tuple)):
-        lines = line_1
-        line_1 = lines[0] if len(lines) > 0 else ""
-        line_2 = lines[1] if len(lines) > 1 else ""
+    if isinstance(line_1, (list, tuple)): # If "line_1" is either a list or a tuple:
 
-    if lcd:
-        lcd.clear()
-        lcd.cursor_pos = (0, 0)
-        lcd.write_string(str(line_1).center(16))
-        lcd.cursor_pos = (1, 0)
-        lcd.write_string(str(line_2).center(16))
+        lines = line_1 # Create variable "lines" and set it's value to "line_1"
 
-    else:
-        print(f"[LCD]: {str(line_1)} | {str(line_2)}")
+        if len(lines) > 0: # If the length of "lines" is more than 0:
+            line_1 = lines[0] # Make "line_1" the first item in "lines"
+        
+        else: # If not:
+            line_1 = "" # Set "line_1" to None (to prevent error)
+
+        if len(lines) > 1: # If the length of "lines" is more than 1:
+            line_2 = lines[1] # Make "line_2" the second item in "lines"
+        
+        else: # If not:
+            line_2 = "" # Set "line_2" to None (to prevent error)
+
+    if lcd: # If variable "LCD" has a value (if the LCD display was detected):
+        lcd.clear() # Clear any old text
+        lcd.cursor_pos = (0, 0) # Set the cursor position to row 0, column 0
+        lcd.write_string(str(line_1).center(16)) # Write "line_1" as a string and make it centered on the 16-character wide display
+        lcd.cursor_pos = (1, 0) # Set the cursor position to row 0, column 0
+        lcd.write_string(str(line_2).center(16)) # Write "line_2" as a string and make it centered on the 16-character wide display
 
 def play_sound(sound):
 
@@ -104,8 +112,8 @@ def play_sound(sound):
 
     """
 
-    if sound:
-        sound.play()
+    if sound: # If variable "sound" has a value
+        sound.play() # Play "sound"
 
 def all_lights_off():
 
@@ -130,7 +138,6 @@ def all_lights_off():
 def round_loop(active_players):
 
     """
-
     Handles a single round of the game.
 
     Arguments:
@@ -143,27 +150,27 @@ def round_loop(active_players):
 
     global round_number
 
-    if len(active_players) == 4:
+    if len(active_players) == 4: # If the number of active players is 4
 
-        last_update = 0
-        step = 0
+        last_update = 0 # Create variable "last_update" and set it to 0
+        step = 0 # Create variable "step" and set it to 0
         messages = [
             ["Welcome to the", "reaction game!"],
             ["Press all", "buttons to start"]
 ]
 
-        while True:
-            if time.time() - last_update >= 3:
-                update_display(messages[step % len(messages)])
-                step += 1
-                last_update = time.time()
+        while True: # Create an infinite loop
+            if time.time() - last_update >= 3: # If 3 seconds or more have elapsed since the last update:
+                update_display(messages[step % len(messages)]) # Updates the display with the next object in "messages"
+                step += 1 # Add 1 to variable "step"
+                last_update = time.time() # Set "last_update" to current time
 
             if all(GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH for player in active_players): # If all active players are pressing their buttons:
                 break # Break the loop
             
-            time.sleep(0.1)
+            time.sleep(0.1) # Sleep for 0.1 second (to prevent high CPU usage)
     
-    else:
+    else: # If not:
 
         update_display(["Press all", "buttons to start"])
 
@@ -175,8 +182,6 @@ def round_loop(active_players):
             time.sleep(0.1) # Sleep for 0.1 second
 
     update_display(["Get ready..."])
-
-    all_lights_off()
 
     delay_time = random.uniform(*delay_interval) # Sets the variable "delay_time" to a random number in "delay_interval"
 
@@ -248,13 +253,13 @@ def main_tournament():
 
         sorted_players = sorted(reaction_times, key = reaction_times.get) # Sort the players by their reaction times
 
-        for player in sorted_players: # For each player in the sorted list
+        for player in sorted_players: # For each player in the sorted list:
 
-            if reaction_times[player] == float("inf"):
-                time_string = "Disqualified"
+            if reaction_times[player] == float("inf"): # If their reaction time is infinite
+                time_string = "Disqualified" # Set their "time_string" to "Disqualified"
             
-            else:
-                time_string = f"{reaction_times[player]:.2f} ms"
+            else: # If not:
+                time_string = f"{reaction_times[player]} ms" # Set their time string to their reaction time
 
             update_display([f"Player {player}", f"Time: {time_string}"]) # Update the display to show the player's reaction time
 
@@ -263,14 +268,14 @@ def main_tournament():
         slowest_player = sorted_players[-1] # The slowest player is the last in the sorted list
         active_players.remove(slowest_player) # Remove the slowest player from the list of active players
         
-        update_display(f"Player {slowest_player}", "ELIMINATED") # Update the display to show that the slowest player is eliminated
+        update_display(f"Player {slowest_player}", "is eliminated!") # Update the display to show that the slowest player is eliminated
         GPIO.output(player_pins[slowest_player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the slowest player
 
         round_number += 1
 
     if len(active_players) == 1: # If there is one active player left
         winner = active_players[0] # Set "winner" to the last remaining player
-        update_display([f"WINNER:", "PLAYER {winner}"])
+        update_display([f"Winner:", f"player {winner}!"])
         play_sound(win_sound)
         GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
 
@@ -295,7 +300,6 @@ if __name__ == "__main__":
         print("\nGame interrupted. Exiting.")
 
     finally:
-        all_lights_off()
         GPIO.cleanup()
         update_display("Goodbye!", "")
         time.sleep(5)
