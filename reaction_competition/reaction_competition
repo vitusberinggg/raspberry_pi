@@ -267,7 +267,7 @@ def main_tournament():
 
             update_display([f"Player {player}", f"Time: {time_string}"]) # Update the display to show the player's reaction time
 
-            time.sleep(2)
+            time.sleep(3)
 
         slowest_player = sorted_players[-1] # The slowest player is the last in the sorted list
         active_players.remove(slowest_player) # Remove the slowest player from the list of active players
