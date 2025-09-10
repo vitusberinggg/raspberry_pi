@@ -236,8 +236,9 @@ def main_tournament():
 
     while len(active_players) > 1: # While there is more than one active player
 
-        update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
-        time.sleep(3) # Sleep for 3 seconds
+        if len(active_players) < 4:
+            update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
+            time.sleep(3) # Sleep for 3 seconds
 
         reaction_times = round_loop(active_players) # Call the round_loop function and store the returned reaction times
         
