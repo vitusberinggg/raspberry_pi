@@ -296,6 +296,7 @@ if __name__ == "__main__":
             time.sleep(3)
             update_display("Restarting...")
             time.sleep(3)
+            all_lights_off()
 
     except KeyboardInterrupt:
         print("\nGame interrupted. Exiting.")
