@@ -218,8 +218,6 @@ def round_loop(active_players):
                     GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH) # Turn on the green LED for the player
                     reaction_time = round((time.time() - start_time) * 1000) # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
-    
-    all_lights_off()
 
     return reaction_times
 
@@ -246,6 +244,7 @@ def main_tournament():
         if len(active_players) < 4:
             update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
             time.sleep(3) # Sleep for 3 seconds
+            all_lights_off()
 
         reaction_times = round_loop(active_players) # Call the round_loop function and store the returned reaction times
         
