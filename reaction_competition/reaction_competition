@@ -255,17 +255,22 @@ def main_tournament():
             break # Exit the loop
 
         sorted_players = sorted(reaction_times, key = reaction_times.get) # Sort the players by their reaction times
+        slowest_player = sorted_players[-1]  # Identify slowest
 
         for player in sorted_players: # For each player in the sorted list:
 
-            if reaction_times[player] == float("inf"): # If their reaction time is infinite
-                time_string = "Disqualified" # Set their "time_string" to "Disqualified"
-                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)  # Red LED for disqualified 
-            else: # If not:
-                time_string = f"{reaction_times[player]} ms" # Set their time string to their reaction time
-                GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH)  # Green LED for valid reaction 
-        
-            update_display([f"Player {player}", f"Time: {time_string}"]) # Update the display to show the player's reaction time
+            if player == slowest_player or reaction_times[player] == float("inf"):
+                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)
+            else:
+                GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH)
+
+        for player in sorted_players: 
+            if reaction_times[player] == float("inf"):
+                time_string = "Disqualified"
+            else:
+                time_string = f"{reaction_times[player]} ms"
+    
+            update_display([f"Player {player}", f"Time: {time_string}"])
             time.sleep(3)
 
         slowest_player = sorted_players[-1] # The slowest player is the last in the sorted list
