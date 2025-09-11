@@ -303,6 +303,7 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nGame interrupted. Exiting.")
+        all_lights_off()
 
     finally:
         GPIO.cleanup()
