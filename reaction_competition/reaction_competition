@@ -181,7 +181,7 @@ def round_loop(active_players):
 
             time.sleep(0.1) # Sleep for 0.1 second
 
-    update_display(["Get ready to", "press your button"])
+    update_display(["Get ready to", "press button"])
 
     delay_time = random.uniform(*delay_interval) # Sets the variable "delay_time" to a random number in "delay_interval"
 
