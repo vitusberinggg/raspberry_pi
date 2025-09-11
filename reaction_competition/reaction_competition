@@ -263,7 +263,7 @@ def main_tournament():
             
             else: # If not:
                 time_string = f"{reaction_times[player]} ms" # Set their time string to their reaction time
-
+            time.sleep(2)
             update_display([f"Player {player}", f"Time: {time_string}"]) # Update the display to show the player's reaction time
 
             time.sleep(3)
