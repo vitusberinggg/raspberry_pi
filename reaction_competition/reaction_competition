@@ -285,9 +285,9 @@ def main_tournament():
         end_time = time.time() + 5
         while time.time() < end_time:
             GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
-            time.sleep(0.5)
+            time.sleep(0.20)
             GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.LOW)
-            time.sleep(0.5)
+            time.sleep(0.20)
 
     else:
         update_display(["No winner!"])
