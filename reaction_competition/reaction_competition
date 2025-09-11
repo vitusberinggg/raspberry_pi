@@ -218,7 +218,6 @@ def round_loop(active_players):
         for player in active_players: # For each active player
             if player not in reaction_times: # If the player has not yet reacted
                 if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH: # If the player is pressing their button
-                    GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH) # Turn on the green LED for the player
                     reaction_time = round((time.time() - start_time) * 1000) # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
 
@@ -274,6 +273,8 @@ def main_tournament():
         
         update_display(f"Player {slowest_player}", "is eliminated!") # Update the display to show that the slowest player is eliminated
         GPIO.output(player_pins[slowest_player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the slowest player
+        for player in sorted_players[:-1]:  # all except slowest
+            GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH) # Turn on the green LED for everyone but the slowest player
 
         round_number += 1
 
