@@ -115,24 +115,37 @@ def play_sound(sound):
     if sound: # If variable "sound" has a value
         sound.play() # Play "sound"
 
-def all_lights_off():
+def lights_off(lights):
 
     """
-    Turns off all lights.
+    Turns off chosen lights.
 
     Arguments:
-        None
+        "all":
+        "green":
+        "red":
+        "center"
     
     Returns:
         None
 
     """
-    
-    for player in player_pins.values(): # Go through each value in the dictionary "player_pins"
-        GPIO.output(player["GREEN_LED"], GPIO.LOW) # Sets the green LED's value to "LOW" (which turns it off)
-        GPIO.output(player["RED_LED"], GPIO.LOW) # Sets the red LED's value to "LOW" (which turns it off)
 
-    GPIO.output(center_LED_pin, GPIO.LOW) # Sets the center LED's value to "LOW" (which turns it off)
+    if isinstance(lights, str):
+        lights = [lights]
+
+    for light in lights:
+
+        if light == "green" or light == "all":
+            for player in player_pins.values():
+                GPIO.output(player["GREEN_LED"], GPIO.LOW)
+
+        if light == "red" or light == "all":
+            for player in player_pins.values():
+                GPIO.output(player["RED_LED"], GPIO.LOW)
+
+        if light == "center" or light == "all":
+            GPIO.output(center_LED_pin, GPIO.LOW)
 
 
 def round_loop(active_players):
@@ -246,7 +259,9 @@ def main_tournament():
         if len(active_players) < 4:
             update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
             time.sleep(3) # Sleep for 3 seconds
-            all_lights_off()
+        
+        lights_off("green")
+        lights_off("center")
 
         reaction_times = round_loop(active_players) # Call the round_loop function and store the returned reaction times
         
@@ -312,11 +327,11 @@ if __name__ == "__main__":
             time.sleep(3)
             update_display("Restarting...")
             time.sleep(3)
-            all_lights_off()
+            lights_off("all")
 
     except KeyboardInterrupt:
         print("\nGame interrupted. Exiting.")
-        all_lights_off()
+        lights_off("all")
 
     finally:
         GPIO.cleanup()
