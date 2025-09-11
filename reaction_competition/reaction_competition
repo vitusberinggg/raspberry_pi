@@ -181,7 +181,7 @@ def round_loop(active_players):
 
             time.sleep(0.1) # Sleep for 0.1 second
 
-    update_display(["Get ready..."])
+    update_display(["Press button when indicator is ready..."])
 
     delay_time = random.uniform(*delay_interval) # Sets the variable "delay_time" to a random number in "delay_interval"
 
@@ -260,21 +260,18 @@ def main_tournament():
 
             if reaction_times[player] == float("inf"): # If their reaction time is infinite
                 time_string = "Disqualified" # Set their "time_string" to "Disqualified"
-            
+                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)  # Red LED for disqualified 
             else: # If not:
                 time_string = f"{reaction_times[player]} ms" # Set their time string to their reaction time
-            time.sleep(2)
+                GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH)  # Green LED for valid reaction 
+        
             update_display([f"Player {player}", f"Time: {time_string}"]) # Update the display to show the player's reaction time
-
             time.sleep(3)
 
         slowest_player = sorted_players[-1] # The slowest player is the last in the sorted list
         active_players.remove(slowest_player) # Remove the slowest player from the list of active players
         
         update_display(f"Player {slowest_player}", "is eliminated!") # Update the display to show that the slowest player is eliminated
-        GPIO.output(player_pins[slowest_player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the slowest player
-        for player in sorted_players[:-1]:  # all except slowest
-            GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH) # Turn on the green LED for everyone but the slowest player
 
         round_number += 1
 
