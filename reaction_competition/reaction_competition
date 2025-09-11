@@ -256,12 +256,12 @@ def main_tournament():
 
     while len(active_players) > 1: # While there is more than one active player
 
+        lights_off("green")
+        lights_off("center")
+
         if len(active_players) < 4:
             update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
             time.sleep(3) # Sleep for 3 seconds
-        
-        lights_off("green")
-        lights_off("center")
 
         reaction_times = round_loop(active_players) # Call the round_loop function and store the returned reaction times
         
@@ -270,12 +270,22 @@ def main_tournament():
             break # Exit the loop
 
         sorted_players = sorted(reaction_times, key = reaction_times.get) # Sort the players by their reaction times
-        slowest_player = sorted_players[-1]  # Identify slowest
+        slowest_player = sorted_players[-1] # Identify the slowest player
 
         for player in sorted_players: # For each player in the sorted list:
 
             if player == slowest_player or reaction_times[player] == float("inf"):
-                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)
+
+                step = 0
+
+                while True:
+                    GPIO.output(player_pins[player]["RED_LED"], GPIO.LOW)
+                    time.sleep(0.2)
+                    GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)
+                    step += 1
+                    if step == 10:
+                        break
+        
             else:
                 GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH)
 
