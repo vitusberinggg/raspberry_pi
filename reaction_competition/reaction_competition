@@ -282,6 +282,8 @@ def main_tournament():
                     GPIO.output(player_pins[player]["RED_LED"], GPIO.LOW)
                     time.sleep(0.2)
                     GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)
+                    time.sleep(0.2)
+
                     step += 1
                     if step == 10:
                         break
