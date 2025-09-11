@@ -282,7 +282,12 @@ def main_tournament():
         winner = active_players[0] # Set "winner" to the last remaining player
         update_display([f"Winner:", f"player {winner}!"])
         play_sound(win_sound)
-        GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
+        end_time = time.time() + 5
+        while time.time() < end_time:
+            GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
+            time.sleep(0.5)
+            GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.LOW)
+            time.sleep(0.5)
 
     else:
         update_display(["No winner!"])
