@@ -6,6 +6,7 @@ import time
 import random
 from RPLCD.i2c import CharLCD # Imports module for controlling LCD display
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
+import datetime # Import the datetime module for working with dates and times
 
 # --- Definitions ---
 
@@ -61,6 +62,11 @@ except Exception as e: # If that doesn't work
     win_sound = None # Set win_sound to None
 
 # --- Helper functions ---
+
+def log_time():
+    with open("game_log.txt", "a") as f: # Open the file "game_log.txt" in append mode ("a"), call it 'f'
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # Get the current date & time, format as "YYYY-MM-DD, HH:MM:SS"
+        f.write(f"{timestamp}\n") # Write the formatted timestamp into the file, followed by a new line
 
 def update_display(line_1 = "", line_2 = ""):
 
@@ -171,12 +177,20 @@ def round_loop(active_players):
             ["Welcome to the", "reaction game!"],
             ["Press all", "buttons to start"]
 ]
-
+        
+        button_touched = False 
+        
         while True: # Create an infinite loop
             if time.time() - last_update >= 3: # If 3 seconds or more have elapsed since the last update:
                 update_display(messages[step % len(messages)]) # Updates the display with the next object in "messages"
                 step += 1 # Add 1 to variable "step"
                 last_update = time.time() # Set "last_update" to current time
+
+            for player in active_players:
+                if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH:
+                    if not button_touched:
+                        log_time()        # logs the first interaction
+                        button_touched = True
 
             if all(GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH for player in active_players): # If all active players are pressing their buttons:
                 break # Break the loop
