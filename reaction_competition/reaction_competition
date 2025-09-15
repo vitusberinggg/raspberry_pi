@@ -256,7 +256,7 @@ def round_loop(active_players):
 
         if len(reaction_times) < len(active_players):
             
-            update_display("Timeout!", "Restarting game...")
+            update_display("Timeout!")
             time.sleep(3)
             return "restart"
     
