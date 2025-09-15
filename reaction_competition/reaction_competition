@@ -226,23 +226,16 @@ def round_loop(active_players):
 
             if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH and player not in reaction_times: # If the player is pressing their button and is not already disqualified
 
+                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the player
                 update_display([f"Player {player}", "EARLY PRESS!"]) # Update the display to show that the player pressed early
                 time.sleep(2)
                 update_display([f"Player {player}", "DISQUALIFIED!"]) # Update the display to show that the player is disqualified
                 time.sleep(2)
-                GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the player
-                early_pressers.append(player)
+                reaction_times[player] = float('inf') # Assign an infinite time
         
         time.sleep(0.1) # Sleep for 0.1 second
-
-    if early_pressers:
-        for player in early_pressers:
-            active_players.remove(player)
     
     # Reaction Phase
-
-    if not active_players: # If all players were disqualified for early presses
-        return {}
     
     play_sound(start_sound)
     update_display(["Go!"])
@@ -299,7 +292,7 @@ def main_tournament():
         if not reaction_times: # If no players reacted (all disqualified)
             update_display(["NO WINNER"]) # Update the display to show "NO WINNER"
             break # Exit the loop
-
+        
         sorted_players = sorted(reaction_times, key = reaction_times.get) # Sort the players by their reaction times
         slowest_player = sorted_players[-1] # Identify the slowest player
 
@@ -310,6 +303,7 @@ def main_tournament():
                 step = 0
 
                 while True:
+                    update_display(f"Player {slowest_player}", "is eliminated!")
                     GPIO.output(player_pins[player]["RED_LED"], GPIO.LOW)
                     time.sleep(0.2)
                     GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH)
@@ -330,9 +324,6 @@ def main_tournament():
     
             update_display([f"Player {player}", f"Time: {time_string}"])
             time.sleep(3)
-        
-        update_display(f"Player {slowest_player}", "is eliminated!") # Update the display to show that the slowest player is eliminated
-        time.sleep(3)
         
         round_number += 1
 
