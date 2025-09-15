@@ -241,15 +241,24 @@ def round_loop(active_players):
     GPIO.output(center_LED_pin, GPIO.HIGH)
 
     start_time = time.time()
+    timeout_seconds = 10
     
-    while len(reaction_times) < len(active_players): # While not all active players have reacted
+    while len(reaction_times) < len(active_players) and time.time() - start_time < timeout_seconds:
         for player in active_players: # For each active player
             if player not in reaction_times: # If the player has not yet reacted
                 if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH: # If the player is pressing their button
                     reaction_time = round((time.time() - start_time) * 1000) # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
-    
+        
     lights_off("center")
+
+    if time.time() - start_time >= timeout_seconds:
+
+        if len(reaction_times) < len(active_players):
+            
+            update_display("Timeout!", "Restarting game...")
+            time.sleep(3)
+            return "restart"
     
     return reaction_times
 
@@ -280,6 +289,9 @@ def main_tournament():
             time.sleep(3) # Sleep for 3 seconds
 
         reaction_times = round_loop(active_players) # Call the round_loop function and store the returned reaction times
+        
+        if reaction_times == "restart":
+            return
         
         if not reaction_times: # If no players reacted (all disqualified)
             update_display(["NO WINNER"]) # Update the display to show "NO WINNER"
