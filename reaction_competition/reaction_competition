@@ -218,6 +218,7 @@ def round_loop(active_players):
     # Early Press Detection Phase
 
     reaction_times = {} # Creates an empty dictionary called "reaction_times" to store the reaction times of each player
+    early_pressers = []
 
     for _ in range(int(delay_time * 10)): # Loop for the duration of the delay time in 0.1 second intervals
 
@@ -230,12 +231,19 @@ def round_loop(active_players):
                 update_display([f"Player {player}", "DISQUALIFIED!"]) # Update the display to show that the player is disqualified
                 time.sleep(2)
                 GPIO.output(player_pins[player]["RED_LED"], GPIO.HIGH) # Turn on the red LED for the player
-                active_players.remove(player) # Remove the player from the list of active players
+                early_pressers.append(player)
         
         time.sleep(0.1) # Sleep for 0.1 second
+
+    if early_pressers:
+        for player in early_pressers:
+            active_players.remove(player)
     
     # Reaction Phase
 
+    if not active_players: # If all players were disqualified for early presses
+        return {}
+    
     play_sound(start_sound)
     update_display(["Go!"])
     GPIO.output(center_LED_pin, GPIO.HIGH)
@@ -310,25 +318,18 @@ def main_tournament():
                     step += 1
                     if step == 10:
                         break
+
+                    active_players.remove(player)
         
             else:
                 GPIO.output(player_pins[player]["GREEN_LED"], GPIO.HIGH)
 
-        for player in sorted_players:
+        for player in active_players:
 
-            if reaction_times[player] == float("inf"):
-                time_string = "Disqualified"
-
-            else:
-                time_string = f"{reaction_times[player]} ms"
+            time_string = f"{reaction_times[player]} ms"
     
             update_display([f"Player {player}", f"Time: {time_string}"])
             time.sleep(3)
-        
-        
-
-        slowest_player = sorted_players[-1] # The slowest player is the last in the sorted list
-        active_players.remove(slowest_player) # Remove the slowest player from the list of active players
         
         update_display(f"Player {slowest_player}", "is eliminated!") # Update the display to show that the slowest player is eliminated
         time.sleep(3)
