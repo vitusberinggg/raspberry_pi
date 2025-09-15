@@ -241,8 +241,9 @@ def round_loop(active_players):
     GPIO.output(center_LED_pin, GPIO.HIGH)
 
     start_time = time.time()
+    timeout_seconds = 10
     
-    while len(reaction_times) < len(active_players): # While not all active players have reacted
+    while len(reaction_times) < len(active_players) and time.time() - start_time < timeout_seconds: # While not all active players have reacted
         for player in active_players: # For each active player
             if player not in reaction_times: # If the player has not yet reacted
                 if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH: # If the player is pressing their button
@@ -250,6 +251,12 @@ def round_loop(active_players):
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
     
     lights_off("center")
+
+    for player in active_players:
+        if player not in reaction_times:
+            reaction_times[player] = float('inf') # Assign an infinite time
+            update_display(f"Player {player}", "timed out!")
+            time.sleep(2)
     
     return reaction_times
 
