@@ -85,6 +85,10 @@ def test_display():
         lcd.clear() # Clear the display
 
         lcd.write_string("DISPLAY TEST") # Write a test message to the display
+        
+        time.sleep(3.0)
+        
+        lcd.clear()
 
     except Exception as e: # If that doesn't work
         print(f"Display not found or could not be initialized: {e}") # Print an error message
@@ -145,10 +149,29 @@ def test_buttons():
 
         print(f"Button on pin {pin} pressed") # Print a message indicating that the button was pressed
 
-
+def test_timer():
+    
+    """
+    Tests the timer.
+    
+    Arguments:
+        None
+        
+    Returns:
+        None
+    
+    """
+    print("Testing timer...")
+    start_time = time.time()
+    time.sleep(1.0)
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time after 1 second: {elapsed_time} s")
+    
 if __name__ == "__main__":
     test_speaker()
     test_display()
     test_leds()
     test_buttons()
-    GPIO.cleanup() # Clean up the GPIO settings
+    test_timer()
+    GPIO.cleanup()

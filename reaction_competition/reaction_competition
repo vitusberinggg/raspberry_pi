@@ -6,6 +6,7 @@ import time
 import random
 from RPLCD.i2c import CharLCD # Imports module for controlling LCD display
 from pygame import mixer # Imports the mixer module from the pygame library for audio playback
+import datetime # Import the datetime module for working with dates and times
 
 # --- Definitions ---
 
@@ -62,6 +63,11 @@ except Exception as e: # If that doesn't work
 
 # --- Helper functions ---
 
+def log_time():
+    with open("game_log.txt", "a") as f: # Open the file "game_log.txt" in append mode ("a"), call it 'f'
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # Get the current date & time, format as "YYYY-MM-DD, HH:MM:SS"
+        f.write(f"{timestamp}\n") # Write the formatted timestamp into the file, followed by a new line
+
 def update_display(line_1 = "", line_2 = ""):
 
     """
@@ -113,6 +119,7 @@ def play_sound(sound):
     """
 
     if sound: # If variable "sound" has a value
+        sound.set_volume(1.0)
         sound.play() # Play "sound"
 
 def lights_off(lights):
@@ -171,12 +178,20 @@ def round_loop(active_players):
             ["Welcome to the", "reaction game!"],
             ["Press all", "buttons to start"]
 ]
-
+        
+        button_touched = False 
+        
         while True: # Create an infinite loop
             if time.time() - last_update >= 3: # If 3 seconds or more have elapsed since the last update:
                 update_display(messages[step % len(messages)]) # Updates the display with the next object in "messages"
                 step += 1 # Add 1 to variable "step"
                 last_update = time.time() # Set "last_update" to current time
+
+            for player in active_players:
+                if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH:
+                    if not button_touched:
+                        log_time()        # logs the first interaction
+                        button_touched = True
 
             if all(GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH for player in active_players): # If all active players are pressing their buttons:
                 break # Break the loop
@@ -233,7 +248,9 @@ def round_loop(active_players):
                 if GPIO.input(player_pins[player]["BUTTON"]) == GPIO.HIGH: # If the player is pressing their button
                     reaction_time = round((time.time() - start_time) * 1000) # Calculate the reaction time in milliseconds
                     reaction_times[player] = reaction_time # Store the reaction time in the dictionary
-
+    
+    lights_off("center")
+    
     return reaction_times
 
 def main_tournament():
@@ -257,7 +274,6 @@ def main_tournament():
     while len(active_players) > 1: # While there is more than one active player
 
         lights_off("green")
-        lights_off("center")
 
         if len(active_players) < 4:
             update_display([f"Round {round_number}", f"{len(active_players)} players left!"]) # Update the display to show the current round and active players
@@ -314,13 +330,13 @@ def main_tournament():
 
     if len(active_players) == 1: # If there is one active player left
         winner = active_players[0] # Set "winner" to the last remaining player
-        update_display([f"Winner:", f"player {winner}!"])
+        update_display([f"Winner:", f"Player {winner}!"])
         play_sound(win_sound)
         end_time = time.time() + 5
         while time.time() < end_time:
-            GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
-            time.sleep(0.20)
             GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.LOW)
+            time.sleep(0.20)
+            GPIO.output(player_pins[winner]["GREEN_LED"], GPIO.HIGH)
             time.sleep(0.20)
 
     else:
